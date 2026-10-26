@@ -70,3 +70,6 @@ input[type=color]{width:42px;height:36px;padding:2px;border:1px solid var(--line
 .chk{display:flex;align-items:center;gap:4px;color:var(--text);font-size:14px;font-weight:800}
 input:disabled{opacity:.7}
 .eqv{min-width:76px;font-weight:800;font-size:14px;color:var(--accent)}
+.note{position:sticky;top:0;z-index:20;background:var(--accent);color:#fff;font-weight:800;padding:12px 16px;text-align:center;cursor:pointer}
+.note.bad{background:var(--red)}
+.note[hidden]{display:none}

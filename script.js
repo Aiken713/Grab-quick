@@ -182,9 +182,7 @@ $("wadd").onclick=()=>{const n=$("wnew").value.trim()||"New wheel";if(busy)retur
 $("wnew").addEventListener("keydown",e=>{if(e.key==="Enter")$("wadd").click()});
 function b64u(u){let s="";for(let k=0;k<u.length;k+=8192)s+=String.fromCharCode.apply(null,u.subarray(k,k+8192));return btoa(s).replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/,"")}
 async function packWheel(w){const o={n:w.name,s:w.secs,i:w.items.map(i=>[i.n,i.auto?null:+i.w||0,i.r|0]),t:w.tiers.map(t=>[t.name,t.color,t.say?1:0])};
- let out=new TextEncoder().encode(JSON.stringify(o)),pre="p";
- if(typeof CompressionStream!=="undefined"){try{out=new Uint8Array(await new Response(new Blob([out]).stream().pipeThrough(new CompressionStream("deflate-raw"))).arrayBuffer());pre="z"}catch(e){}}
- return pre+b64u(out)}
+ return "p"+b64u(new TextEncoder().encode(JSON.stringify(o)))}
 async function unpackWheel(s){const b=s.slice(1).replace(/-/g,"+").replace(/_/g,"/");let u=Uint8Array.from(atob(b+"=".repeat((4-b.length%4)%4)),c=>c.charCodeAt(0));
  if(s[0]==="z")u=new Uint8Array(await new Response(new Blob([u]).stream().pipeThrough(new DecompressionStream("deflate-raw"))).arrayBuffer());
  return JSON.parse(new TextDecoder().decode(u))}
@@ -193,16 +191,21 @@ function wheelFromShare(o){const hex=c=>/^#[0-9a-f]{6}$/i.test(c)?c:"#7da6ff";
  const tiers=o.t.map(t=>({name:String(t[0]).slice(0,40),max:0,say:!!t[2],snd:null,color:hex(t[1])}));
  const items=o.i.map(i=>({n:String(i[0]).slice(0,60),auto:i[1]===null,w:i[1]===null?0:Math.max(0,+i[1]||0),r:Math.min(tiers.length-1,Math.max(0,i[2]|0))}));
  return {id:uid(),name:String(o.n||"Shared wheel").slice(0,60),items,tiers,secs:Math.max(1,Math.min(60,+o.s||10)),stats:blank(),log:[],t2:true}}
-async function checkShared(){const m=location.hash.match(/^#wheel=([A-Za-z0-9_-]+)$/);if(!m)return;
- try{const w=wheelFromShare(await unpackWheel(m[1]));S.wheels.push(w);loadWheel(w.id);save();history.replaceState(null,"",location.pathname+location.search);refreshAll();wmsg("Added “"+w.name+"” from a shared link. It’s now in your list.")}
- catch(e){wmsg("That shared link didn’t work.")}}
+function note(t,bad){const n=$("note");n.textContent=t+" (tap to close)";n.className="note"+(bad?" bad":"");n.hidden=false;n.onclick=()=>{n.hidden=true}}
+async function checkShared(src){const m=(src||location.search+location.hash).match(/[?#&]?wheel=([A-Za-z0-9_-]+)/);if(!m)return false;
+ try{const w=wheelFromShare(await unpackWheel(m[1]));S.wheels.push(w);loadWheel(w.id);save();
+  if(!src)history.replaceState(null,"",location.pathname);
+  refreshAll();const t="Added “"+w.name+"” with "+w.items.length+" items from the shared link. It’s now open, and it’s in My wheels.";wmsg(t);note(t);return true}
+ catch(e){const t="That shared link didn’t work. Ask for a new link, or use Export and Import file instead.";wmsg(t);note(t,true);return false}}
+$("wpbtn").onclick=async()=>{const v=$("wpaste").value.trim();if(!v)return;if(await checkShared(v))$("wpaste").value="";else if(!/wheel=/.test(v))wmsg("No wheel found in that text. Paste the whole link.")};
+addEventListener("hashchange",()=>checkShared());
 async function copyText(t){try{await navigator.clipboard.writeText(t);return true}catch(e){try{const ta=document.createElement("textarea");ta.value=t;ta.style.position="fixed";ta.style.opacity="0";document.body.appendChild(ta);ta.select();const ok=document.execCommand("copy");ta.remove();return ok}catch(x){return false}}}
 function download(name,text){const b=new Blob([text],{type:"application/json"}),a=document.createElement("a");a.href=URL.createObjectURL(b);a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),2000)}
 $("wlist").addEventListener("click",async e=>{const d=e.target.dataset;
  if(d.we){save();const w=S.wheels.find(x=>x.id===d.we);download((w.name.replace(/[^\w-]+/g,"-")||"wheel")+".json",JSON.stringify({wheels:[w]},null,1));wmsg("Exported “"+w.name+"”.")}
  if(d.wl){save();const w=S.wheels.find(x=>x.id===d.wl);
   if(location.protocol==="file:"){wmsg("Links only work once the page is hosted online, like on GitHub Pages. Use Export for now.");return}
-  const url=location.origin+location.pathname+location.search+"#wheel="+await packWheel(w),ok=await copyText(url),snd=w.tiers.some(t=>t.snd);
+  const url=location.origin+location.pathname+"?wheel="+await packWheel(w),ok=await copyText(url),snd=w.tiers.some(t=>t.snd);
   wmsg(ok?"Link copied. Anyone who opens it gets their own copy of “"+w.name+"”."+(snd?" Recorded or uploaded sounds aren’t included, so use Export to share those.":""):"Couldn’t copy automatically. Copy this link: "+url)}
  if(d.wo)openWheel(d.wo);
  if(d.wd){save();const w=S.wheels.find(x=>x.id===d.wd),c=clone(w);c.id=uid();c.name=w.name+" copy";c.stats=blank();c.log=[];S.wheels.push(c);wmsg(save()?"Duplicated as “"+c.name+"”.":"Duplicated, but it’s too big to remember. Use Export.");drawWList()}

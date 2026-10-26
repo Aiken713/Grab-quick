@@ -47,4 +47,4 @@ Each item is either **Auto** or has its own number. Items with a number keep exa
 ## Sharing one wheel
 In **My wheels**, each wheel has two buttons:
 - **Export** downloads just that wheel as a file. Others can load it with **Import file**.
-- **Copy link** copies a link that carries the wheel inside it. Anyone who opens the link gets their own copy added to their list. This only works once the page is hosted (for example GitHub Pages), not from a file on your computer. Recorded or uploaded sounds are not included in links, so use Export for those.
+- **Copy link** copies a link that carries the wheel inside it. Anyone who opens the link gets their own copy added to their list. If a link ever gets mangled by a chat app, they can paste it into **Paste a shared link here** in My wheels. This only works once the page is hosted (for example GitHub Pages), not from a file on your computer. Recorded or uploaded sounds are not included in links, so use Export for those.
