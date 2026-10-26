@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Rarity Picker</title>
+<meta name="theme-color" content="#07163f">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎲</text></svg>">
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@500;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<main>
+  <header><h1>Rarity Picker</h1><button class="tvbtn" id="tv">TV mode</button></header>
+  <div class="stage" id="stage" aria-live="polite"></div>
+
+  <section><details open><summary>My wheels</summary>
+    <div class="row"><label for="wname">Open wheel name</label><input type="text" id="wname"></div>
+    <div id="wlist"></div>
+    <div class="row"><input type="text" id="wnew" placeholder="New wheel name" aria-label="New wheel name"><button class="s" id="wadd">Create wheel</button></div>
+    <div class="hint" id="wmsg" aria-live="polite"></div>
+    <div class="row"><button class="s" id="exp">Export all wheels</button><label>Import file <input type="file" id="imp" accept=".json,application/json"></label></div>
+  </details></section>
+
+  <section><details open><summary>Items and chances</summary>
+    <div class="pbar" id="pbar" role="img" aria-label="Chance of each item"></div>
+    <div id="items"></div>
+    <div class="row"><input type="text" id="newName" placeholder="New item name" aria-label="New item name"><label class="chk"><input type="checkbox" id="newAuto" checked> Auto</label><input type="number" id="newW" value="10" min="0" step="any" aria-label="New item chance" disabled><span>%</span><select id="newR" aria-label="New item rarity"></select><button class="s" id="add">Add item</button></div>
+    <div class="row"><span id="total" class="hint"></span><button class="s" id="bal">Balance to 100%</button><button class="s" id="eq">Make all Auto</button></div>
+    <div class="row"><label for="secs">Wait time (seconds)</label><input type="number" id="secs" min="1" max="60" value="10"></div>
+  </details></section>
+
+  <section><details><summary>Rarity names and sounds</summary>
+    <p class="hint">Rename each rarity and choose how it sounds. You pick each item’s rarity in the item list.</p>
+    <div id="tiers"></div>
+    <div class="row tier"><input type="text" id="tnew" placeholder="New rarity name" aria-label="New rarity name"><input type="color" id="tcol" value="#ffd84d" aria-label="New rarity color"><button class="s" id="tadd">Add rarity</button></div>
+  </details></section>
+
+  <section><details open><summary>Stats</summary>
+    <div class="rounds" id="rounds"></div><div class="hint">rounds played</div>
+    <div id="stats"></div>
+    <div class="row"><button class="s" id="rst">Reset stats</button></div>
+  </details></section>
+
+  <section><details open><summary>Inventory log</summary>
+    <div class="hist" id="hist"></div>
+    <div class="row"><button class="s" id="clr">Clear log</button></div>
+  </details></section>
+</main>
+
+<div class="tvr" id="tvr" aria-live="polite"></div>
+<dialog id="snd" aria-labelledby="sndTitle">
+  <h2 id="sndTitle"></h2>
+  <p class="hint" id="sndMsg" aria-live="polite"></p>
+  <div class="row"><button class="s warn" id="sndRec">Record</button><button class="s" id="sndUp">Upload a file</button><input type="file" id="sndFile" accept="audio/*" hidden></div>
+  <audio id="sndPrev" controls hidden style="width:100%"></audio>
+  <div class="row"><button class="s" id="sndSave" disabled>Use this sound</button><button class="s" id="sndCancel">Cancel</button></div>
+</dialog>
+<script src="script.js"></script>
+</body>
+</html>
